@@ -1,0 +1,23 @@
+name: Kubernetes YAML Validation
+
+on:
+    push:
+        branches: [main]
+    pull_request:
+
+jobs:
+    validate-yaml:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v3
+
+            - name: Install kubeval
+              run: |
+                  curl -sSL https://github.com/instrumenta/kubeval/releases/latest/download/kubeval-linux-amd64.tar.gz | tar xz
+                  sudo mv kubeval /usr/local/bin
+
+            - name: Validate Kubernetes YAML files
+              run: |
+                  find . -name "*.yaml" -o -name "*.yml" | xargs kubeval --strict --ignore-missing-schemas
